@@ -3,7 +3,9 @@ const cors = require('cors');
 const axios = require('axios');
 
 const app = express();
-const PORT = 8000;  
+const PORT = 8000;
+
+// Set the OPENAI_API_KEY environment variable with your actual API key before running the server.
 
 // Middleware
 app.use(cors());
@@ -35,16 +37,16 @@ app.post('/api-endpoint', async (req, res) => {
         You may need to adjust accordingly per question or problem depending on the amount of mistakes they make
         so try and adjust your response so that it can be easily digestible to the user you are speaking to.
         `;
-        
-        const { temperature, max_tokens } = req.body; 
-        
+
+        const { temperature, max_tokens } = req.body;
+
         const response = await axios.post('https://api.openai.com/v1/engines/davinci/completions', {
             prompt: prompt,
             temperature: temperature,
             max_tokens: max_tokens
         }, {
             headers: {
-                'Authorization': 'Bearer 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'
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             }
         });
 

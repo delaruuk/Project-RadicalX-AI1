@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import InputArea from './InputArea';
+const openaiApiKey = process.env.OPENAI_API_KEY;
 
 // Helper function to call the GPT API
 async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
@@ -8,7 +9,7 @@ async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
         const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer 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', // Replace with your actual API Key
+                'Authorization': 'Bearer ${process.env.OPENAI_API_KEY}', // Replace with your actual API Key
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
