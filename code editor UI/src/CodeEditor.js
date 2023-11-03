@@ -5,23 +5,22 @@ import './CodeEditor.css';
 import axios from 'axios';
 
 function CodeEditor() {
-    // State variables to set users source code
+    // State variables to set user's source code
     const [userCode, setUserCode] = useState('');
 
-    // State variable to set editors default language
+    // State variable to set editor's default language
     const [userLang, setUserLang] = useState('python');
 
-    // State variable to set editors default font theme
+    // State variable to set editor's default font theme
     const [userTheme, setUserTheme] = useState('vs-dark');
 
-    // State variable to set editors default font size
+    // State variable to set editor's default font size
     const [fontSize, setFontSize] = useState('20px');
 
-    // State variable to set users input
+    // State variable to set user's input
     const [userInput, setUserInput] = useState("");
 
-    // Loading state variable to show spinner
-    // while fetching data
+    // Loading state variable to show spinner while fetching data
     const [loading, setLoading] = useState(false);
 
     const [userOutput, setUserOutput] = useState('');
@@ -34,19 +33,21 @@ function CodeEditor() {
     function compile() {
         setLoading(true);
         if (userCode === ``) {
-            return
+            return;
         }
 
-        // Post request to compile endpoint
-        axios.post(`http://localhost:8000/compile`, {
+        // Post request to backend endpoint for code execution
+        axios.post(`/api/execute-code`, {
             code: userCode,
             language: userLang,
             input: userInput
         }).then((res) => {
             setUserOutput(res.data.output);
-        }).then(() => {
             setLoading(false);
-        })
+        }).catch(error => {
+            console.error("Error in executing code:", error);
+            setLoading(false);
+        });
     }
 
     // Function to clear the output screen
@@ -85,7 +86,7 @@ function CodeEditor() {
                     <h4>Output:</h4>
                     {loading ? (
                         <div className="spinner-box">
-                            <img src="" />
+                            <img src="" alt="Loading..." />
                         </div>
                     ) : (
                         <div className="output-box">
