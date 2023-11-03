@@ -9,9 +9,6 @@ const PORT = 8000;
 app.use(cors());
 app.use(express.json());
 
-// Use environment variable
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
 // Route to handle code compilation or any other requests using the API key
 app.post('/api-endpoint', async (req, res) => {
     try {
