@@ -3,21 +3,34 @@ import MessageList from './MessageList';
 import InputArea from './InputArea';
 
 // Helper function to call the GPT API
-function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
-    const response = fetch('https://api.openai.com/v1/engines/davinci/completions', {
-        method: 'POST',
-        headers: {
-            'Authorization': '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', // Replace with your actual API Key
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            prompt: prompt,
-            temperature: temperature,
-            max_tokens: max_tokens
-        })
-    });
-    return response.json();
+async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 150) {
+    try {
+        const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer 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', // Replace with your actual API Key
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                temperature: temperature,
+                max_tokens: max_tokens
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+        throw error;
+    }
 }
+
+
 
 // Helper function to enhance the prompts of GPT
 function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
@@ -48,16 +61,18 @@ function ChatPanel() {
     const handleUserSubmit = async (query) => {
         setMessages([...messages, { type: 'user', content: query }]);
         setIsBotTyping(true);
-        
+    
         try {
             const enhancedPrompt = engineer_gpt_prompts(query);
-            const data = call_gpt_api(enhancedPrompt);
+            const response = await call_gpt_api(enhancedPrompt);
+            const data = await response.json();
             setMessages(prev => [...prev, { type: 'bot', content: data.choices[0].text.trim() }]);
             setIsBotTyping(false);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
     };
+    
 
     return (
         <div className="chat-panel">
