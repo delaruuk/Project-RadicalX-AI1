@@ -30,7 +30,7 @@ app.post('/api-endpoint', async (req, res) => {
             max_tokens: max_tokens
         }, {
             headers: {
-                'Authorization': `Bearer ${OPENAI_API_KEY}`
+                'Authorization': 'Bearer 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'
             }
         });
 
