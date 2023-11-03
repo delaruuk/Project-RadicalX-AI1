@@ -4,7 +4,9 @@ const cors = require('cors');
 const axios = require('axios');
 const app = express();
 const PORT = 8000;
-const openaiApiKey = process.env.OPENAI_API_KEY; // Store the API key in a variable
+const openaiApiKey = process.env.REACT_APP_OPENAI_API_KEY;
+
+const port = process.env.PORT; // Store the API key in a variable
 // Middleware
 app.use(cors());
 app.use(express.json());
