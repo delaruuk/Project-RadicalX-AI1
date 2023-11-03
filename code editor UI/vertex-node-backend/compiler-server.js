@@ -42,6 +42,11 @@ app.post('/compile', (req, res) => {
         });
 })
 
+app.post('/echo', (req, res) => {
+    // Echo back the received data
+    res.json(req.body);
+});
+
 app.listen(process.env.PORT || PORT, () => {
     console.log(`Server listening on port ${PORT}`);
 });
