@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 
+const { exec } = require('child_process');
+const fs = require('fs');
+
 const app = express();
 const PORT = 8000;  
 
@@ -51,6 +54,54 @@ app.post('/api-endpoint', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         res.status(500).json({ error: 'Failed to process the request.' });
+    }
+});
+
+app.post('/api/execute-code', (req, res) => {
+    // Extract data from request
+    const { code, language, input } = req.body;
+
+    switch(language) {
+        case 'python':
+            exec(`echo "${code}" | python3`, (error, stdout, stderr) => {
+                if(error) {
+                    console.error(`exec error: ${error}`);
+                    return res.status(500).json({ output: 'Error executing Python code.' });
+                }
+                res.json({ output: stdout });
+            });
+            break;
+
+        case 'javascript':
+            exec(`echo "${code}" | node`, (error, stdout, stderr) => {
+                if(error) {
+                    console.error(`exec error: ${error}`);
+                    return res.status(500).json({ output: 'Error executing JavaScript code.' });
+                }
+                res.json({ output: stdout });
+            });
+            break;
+
+        case 'java':
+            // Write code to a temp file, compile and execute
+            fs.writeFileSync('Temp.java', code);
+            exec('javac Temp.java', (compileError) => {
+                if(compileError) {
+                    console.error(`compile error: ${compileError}`);
+                    return res.status(500).json({ output: 'Error compiling Java code.' });
+                }
+                exec('java Temp', (runError, stdout, stderr) => {
+                    if(runError) {
+                        console.error(`run error: ${runError}`);
+                        return res.status(500).json({ output: 'Error executing Java code.' });
+                    }
+                    res.json({ output: stdout });
+                });
+            });
+            break;
+
+        default:
+            res.status(400).json({ output: 'Unsupported language.' });
     }
 });
 
