@@ -7,7 +7,7 @@ function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
     const response = fetch('https://api.openai.com/v1/engines/davinci/completions', {
         method: 'POST',
         headers: {
-            'Authorization': 'YOUR_API_KEY', // Replace with your actual API Key
+            'Authorization': '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', // Replace with your actual API Key
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
