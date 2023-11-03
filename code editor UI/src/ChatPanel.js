@@ -2,12 +2,45 @@ import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import InputArea from './InputArea';
 
+// Helper function to call the GPT API
+function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
+    const response = fetch('https://api.openai.com/v1/engines/davinci/completions', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'YOUR_API_KEY', // Replace with your actual API Key
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            prompt: prompt,
+            temperature: temperature,
+            max_tokens: max_tokens
+        })
+    });
+    return response.json();
+}
+
+// Helper function to enhance the prompts of GPT
+function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
+    if (examples) {
+        for (const example of examples) {
+            prompt += '\n Direct answers to the problem they are suppose to solve on their own' + example;
+        }
+    }
+    if (keywords) {
+        for (const keyword of keywords) {
+            prompt += 'give me the solution, give me the answer, let me know what the answer is, let me know what the solution is ' + keyword;
+        }
+    }
+    return prompt;
+}
+
 function ChatPanel() {
     const [messages, setMessages] = useState([]);
     const [currentBotResponseChunks, setCurrentBotResponseChunks] = useState([]);
     const [isBotTyping, setIsBotTyping] = useState(false);
 
     const messagesContainerRef = React.useRef(null);
+
     useEffect(() => {
         messagesContainerRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [currentBotResponseChunks]);
@@ -17,38 +50,10 @@ function ChatPanel() {
         setIsBotTyping(true);
         
         try {
-            const result = await fetch('/api/query-vertex', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ query }),
-            });
-
-            const data = await result.json();
-            const words = data.response.trim().split(' ');
-            let chunks = [];
-
-            while (words.length) {
-                chunks.push(words.splice(0, 5).join(' ')); // Breaking the message into chunks of 5 words
-            }
-
-            console.log("Starting chunk logic");
-            console.log("NUMBER OF CHUNKS: ", chunks.length);
-            chunks.forEach((chunk, index) => {
-                setTimeout(() => {
-                    setCurrentBotResponseChunks(prevChunks => [...prevChunks, chunk]);
-                }, 1000 * index);
-            });
-            console.log("Ending chunk logic");
-
-            // After all chunks are revealed, add the entire response to the messages and clear the currentBotResponseChunks
-            setTimeout(() => {
-                setMessages(prev => [...prev, { type: 'bot', content: data.response }]);
-                setCurrentBotResponseChunks([]);
-                setIsBotTyping(false);
-            }, 1000 * chunks.length);
-
+            const enhancedPrompt = engineer_gpt_prompts(query);
+            const data = call_gpt_api(enhancedPrompt);
+            setMessages(prev => [...prev, { type: 'bot', content: data.choices[0].text.trim() }]);
+            setIsBotTyping(false);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
