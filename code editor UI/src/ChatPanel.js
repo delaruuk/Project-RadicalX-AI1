@@ -3,8 +3,8 @@ import MessageList from './MessageList';
 import InputArea from './InputArea';
 
 // Helper function to call the GPT API
-function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
-    const response = fetch('https://api.openai.com/v1/engines/davinci/completions', {
+async function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
+    const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
         method: 'POST',
         headers: {
             'Authorization': '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',
@@ -16,7 +16,7 @@ function call_gpt_api(prompt, temperature=0.5, max_tokens=150) {
             max_tokens: max_tokens
         })
     });
-    return response.json();
+    return await response.json();
 }
 
 // Helper function to enhance the prompts of GPT
@@ -51,8 +51,14 @@ function ChatPanel() {
         
         try {
             const enhancedPrompt = engineer_gpt_prompts(query);
-            const data = call_gpt_api(enhancedPrompt);
-            setMessages(prev => [...prev, { type: 'bot', content: data.choices[0].text.trim() }]);
+            const data = await call_gpt_api(enhancedPrompt);
+            
+            if (data.choices && data.choices.length > 0) {
+                setMessages(prev => [...prev, { type: 'bot', content: data.choices[0].text.trim() }]);
+            } else {
+                console.error('Unexpected API response:', data);
+            }
+            
             setIsBotTyping(false);
         } catch (error) {
             console.error('Failed to fetch data:', error);
