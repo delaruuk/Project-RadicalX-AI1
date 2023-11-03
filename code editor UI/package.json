@@ -1,3 +1,5 @@
+npm install concurrently --save-dev
+
 {
   "name": "omega",
   "version": "0.1.0",
