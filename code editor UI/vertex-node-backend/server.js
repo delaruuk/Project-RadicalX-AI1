@@ -1,12 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-
+require('dotenv').config();
 const app = express();
 const PORT = 8000;
-
-// Set the OPENAI_API_KEY environment variable with your actual API key before running the server.
-
+const openaiApiKey = process.env.OPENAI_API_KEY;
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -49,6 +47,7 @@ app.post('/api-endpoint', async (req, res) => {
                 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             }
         });
+        
 
         res.json(response.data);
     } catch (error) {
