@@ -1,10 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-require('dotenv').config();
 const app = express();
 const PORT = 8000;
-const openaiApiKey = process.env.OPENAI_API_KEY;
+const openaiApiKey = process.env.OPENAI_API_KEY; // Store the API key in a variable
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -44,7 +44,7 @@ app.post('/api-endpoint', async (req, res) => {
             max_tokens: max_tokens
         }, {
             headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+                'Authorization': `Bearer ${openaiApiKey}` // Use the openaiApiKey variable
             }
         });
         

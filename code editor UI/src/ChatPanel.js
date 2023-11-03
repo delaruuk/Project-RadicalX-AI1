@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import MessageList from './MessageList';
 import InputArea from './InputArea';
+// Access the OpenAI API key from environment variables
 const openaiApiKey = process.env.REACT_APP_OPENAI_API_KEY;
+
 // Helper function to call the GPT API
 async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
     try {
         const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Authorization': `Bearer ${openaiApiKey}`, // Use the openaiApiKey variable
                 'Content-Type': 'application/json',
             },
             
@@ -30,6 +32,7 @@ async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
         throw error;
     }
 }
+
 
 // Helper function to enhance the prompts of GPT
 function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
