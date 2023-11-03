@@ -44,7 +44,7 @@ app.post('/api-endpoint', async (req, res) => {
             max_tokens: max_tokens
         }, {
             headers: {
-                'Authorization': 'Bearer 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'
+                'Authorization': 'Bearer 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'
             }
         });
 

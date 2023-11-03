@@ -3,12 +3,12 @@ import MessageList from './MessageList';
 import InputArea from './InputArea';
 
 // Helper function to call the GPT API
-async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 150) {
+async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
     try {
         const response = await fetch('https://api.openai.com/v1/engines/davinci/completions', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer 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', // Replace with your actual API Key
+                'Authorization': 'Bearer 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', // Replace with your actual API Key
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -30,8 +30,6 @@ async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 150) {
     }
 }
 
-
-
 // Helper function to enhance the prompts of GPT
 function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
     if (examples) {
@@ -49,7 +47,7 @@ function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
 
 function ChatPanel() {
     const [messages, setMessages] = useState([]);
-    const [currentBotResponseChunks, setCurrentBotResponseChunks] = useState([]);
+    const [currentBotResponseChunks] = useState([]);
     const [isBotTyping, setIsBotTyping] = useState(false);
 
     const messagesContainerRef = React.useRef(null);
@@ -65,13 +63,24 @@ function ChatPanel() {
         try {
             const enhancedPrompt = engineer_gpt_prompts(query);
             const response = await call_gpt_api(enhancedPrompt);
-            const data = await response.json();
-            setMessages(prev => [...prev, { type: 'bot', content: data.choices[0].text.trim() }]);
+    
+            if (response && response.choices && response.choices.length > 0) {
+                const responseData = response.choices[0];
+                setMessages((prev) => [
+                    ...prev,
+                    { type: 'bot', content: responseData.text.trim() },
+                ]);
+            } else {
+                console.error('No valid response from the API.');
+            }
+    
             setIsBotTyping(false);
         } catch (error) {
             console.error('Failed to fetch data:', error);
         }
     };
+    
+    
     
 
     return (
@@ -84,3 +93,6 @@ function ChatPanel() {
 }
 
 export default ChatPanel;
+
+
+
