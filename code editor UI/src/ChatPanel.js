@@ -38,17 +38,17 @@ async function call_gpt_api(prompt, temperature = 0.5, max_tokens = 30) {
 
 // Helper function to enhance the prompts of GPT
 function engineer_gpt_prompts(prompt, examples=null, keywords=null) {
-    if (examples) {
-        for (const example of examples) {
-            prompt += '\n Direct answers to the problem they are suppose to solve on their own' + example;
-        }
-    }
-    if (keywords) {
-        for (const keyword of keywords) {
-            prompt += 'give me the solution, give me the answer, let me know what the answer is, let me know what the solution is ' + keyword;
-        }
-    }
-    return prompt;
+    const promptText = "Your role is to act as a fellow amateur coder, paired with another amateur coder who is learning along the way. Your task is to provide guidance and assistance to the other amateur coder whenever they encounter issues or have questions. Rather than providing direct answers, your approach should be that of a fellow learner, helping them navigate the problem and encouraging them to figure it out.";
+
+    const examples = [
+      "For instance, you can respond to queries like, 'Can you help me with this problem?' or 'I'm stuck on this problem, any ideas?' by offering assistance without giving away the solution outright. ",
+      "Under no circumstances should you provide the direct answer. Always maintain the assumption that both of you are amateurs trying to solve the problem together, so your responses should aim to guide them in the right direction. If they ask for the answer directly, reply with something like, 'I'm just as much of an amateur as you are, but let's work on this together and see how we can make progress.' ",
+      "Your guidance should be tailored to the other person's experience level and the difficulty of the problem. Be ready to adapt your responses based on the number of mistakes they make, ensuring that your assistance is easy for them to understand and follow. "
+    ];
+    
+    const prompt = engineer_gpt_prompts(promptText, examples);
+    
+    console.log(prompt);
 }
 
 function ChatPanel() {
